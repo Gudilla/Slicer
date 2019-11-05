@@ -103,6 +103,9 @@ class Triangle:
         if self.p1[2] == self.p2[2] == self.p3[2] == plane.coordinate:
             return False
         for edge in self.edges:
+            if (edge.start.z == plane.coordinate and edge.end.z != plane.coordinate) or \
+               (edge.start.z != plane.coordinate and edge.end.z == plane.coordinate):
+                continue
             if edge.end.z >= plane.coordinate >= edge.start.z:
                 return True
         return False
@@ -129,6 +132,7 @@ def find_intersection_type(triangle, plane):
             return 2
 
     # third type -> one of the triangle's vertexes lies on the plane -> one intersection point
+    # TODO: DISABLED IN Triangle class
     if triangle.p1[2] == plane.coordinate or triangle.p2[2] == plane.coordinate or triangle.p3[2] == plane.coordinate:
         return 3
 
@@ -148,7 +152,7 @@ def calculate_intersection_point(edge, plane):
     by = edge.start.y - ky * edge.start.z
     y = ky * plane.coordinate + by
 
-    return tuple([x, y])
+    return tuple([x, y, plane.coordinate])
 
 
 def has_common_edge(triangle_1, triangle_2):
@@ -182,36 +186,16 @@ class Intersection:
         # Calculate two intersection points with two edges
         if self.type == 1:
             for edge in triangle.edges:
-                if edge.hash in plane.intersection_hashes:
-                    continue
-                else:
-                    if edge.start.z < plane.coordinate < edge.end.z:
-                        points['count'] += 1
-                        points['points'].append(calculate_intersection_point(edge, plane))
-                        plane.add_intersection(edge.hash)
+                if edge.start.z < plane.coordinate < edge.end.z:
+                    points['count'] += 1
+                    points['points'].append(calculate_intersection_point(edge, plane))
 
         # Get two intersection points
         elif self.type == 2:
             for edge in triangle.edges:
-                if edge.start.hash not in plane.intersection_hashes:
-                    if edge.start.z == plane.coordinate:
-                        points['points'].append(edge.start.get_coordinates())
-                        points['count'] += 1
-                        plane.add_intersection(edge.start.hash)
-                if edge.end.hash not in plane.intersection_hashes:
-                    if edge.end.z == plane.coordinate:
-                        points['points'].append(edge.end.get_coordinates())
-                        points['count'] += 1
-                        plane.add_intersection(edge.end.hash)
-
-        # Get one intersection point
-        elif self.type == 3:
-            points['count'] = 1
-            if triangle.p1[2] == plane.coordinate:
-                points['points'] = [triangle.p1]
-            elif triangle.p2[2] == plane.coordinate:
-                points['points'] = [triangle.p2]
-            elif triangle.p3[2] == plane.coordinate:
-                points['points'] = [triangle.p3]
+                if edge.start.z == plane.coordinate and edge.end.z == plane.coordinate:
+                    points['points'].append(edge.start.get_coordinates())
+                    points['points'].append(edge.end.get_coordinates())
+                    points['count'] += 2
 
         return points
