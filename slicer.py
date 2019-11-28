@@ -32,7 +32,7 @@ class Figure3D:
 class MainWindow(tk.Frame):
     def __init__(self, root):
         super().__init__(root)
-        self.figure = Figure3D('pyramid.stl')
+        self.figure = Figure3D('example2.stl')
 
         button_show_figure = tk.Button(self, text='Show figure', bg='#d7d8e0', width=300, height=300,
                                        command=self.figure.show_figure)
