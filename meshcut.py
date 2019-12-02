@@ -2,7 +2,7 @@ import slicer_workshop as sw
 from matplotlib import pyplot
 from stl import mesh
 import os
-import numpy as np
+from PIL import Image
 
 
 # Creating a triangle set
@@ -43,7 +43,8 @@ def calculate_scale(filename=''):
         scale_max = max(model.max_[0], model.max_[1])
         scale_min -= scale_max / 10
         scale_max += scale_max / 10
-    return tuple([scale_min, scale_max])
+    return [scale_min, scale_max]
+#    return tuple([scale_min, scale_max])
 
 
 def calculate_layers_count(step=0.1, filename=''):
@@ -64,7 +65,7 @@ def clear_directory():
             os.unlink(directory_name + '/' + filename)
 
 
-filename = 'table1.stl'
+filename = 'example.stl'
 step = 10
 
 triangles = create_triangles_from_stl(filename)
@@ -74,11 +75,6 @@ print(f'Triangles count = {len(triangles)}')
 layers_count = calculate_layers_count(step, filename)
 
 scale = calculate_scale(filename)
-
-#for i in range(0, len(triangles)-1):
-#    for k in range(1, len(triangles)):
-#        if sw.has_common_edge(triangles[i], triangles[k]):
-#            print(f'Triangle № {i+1} has common edge with the triangle № {k+1}')
 
 try:
     os.mkdir('pict')
@@ -91,24 +87,28 @@ for j in range(layers_count):
 
     # Finding triangles, wich intersect the plane
     triangle_numbers = [num for num in range(len(triangles)) if triangles[num].is_intersects_plane(plane)]
-#    print(triangle_numbers)
 
     # Finding intersections
     intersections = [sw.Intersection(triangles[k], plane) for k in triangle_numbers]
 
     # Printing intersections types
+    fig = pyplot.figure(figsize=(3.2, 3.2))
+    ax = fig.add_subplot()
     for i in range(len(intersections)):
-#        print(f'Triangle № {triangle_numbers[i] + 1} intersects the plane by the {intersections[i].type} type')
-#        print(f'Points count: {intersections[i].points["count"]}')
         X, Y = [], []
         for n in range(intersections[i].points['count']):
-#            print(f'{n + 1}) {intersections[i].points["points"][n]};')
             X.append(intersections[i].points["points"][n][0])
             Y.append(intersections[i].points["points"][n][1])
-        pyplot.plot(X, Y, color='green')
+        ax.plot(X, Y, color='green')
 
-    pyplot.xlim(scale)
-    pyplot.ylim(scale)
-    pyplot.axis('off')
-    pyplot.savefig(f'pict/figure{j+1}')
-    pyplot.clf()
+    ax.set_xlim(left=scale[0], right=scale[1])
+    ax.set_ylim(bottom=scale[0], top=scale[1])
+    ax.set_axis_off()
+    fig.savefig(f'pict/figure{j+1}', dpi=200)
+    ax.clear()
+
+im = Image.open('pict/figure1.png')
+print(im.info)
+im.save('pict/test.png', dpi=(200.0, 200.0))
+im = Image.open('pict/figure1.png')
+print(im.info)
