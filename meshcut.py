@@ -65,7 +65,7 @@ def clear_directory():
             os.unlink(directory_name + '/' + filename)
 
 
-filename = 'example.stl'
+filename = 'cone.stl'
 step = 10
 
 triangles = create_triangles_from_stl(filename)
@@ -99,16 +99,16 @@ for j in range(layers_count):
         for n in range(intersections[i].points['count']):
             X.append(intersections[i].points["points"][n][0])
             Y.append(intersections[i].points["points"][n][1])
-        ax.plot(X, Y, color='green')
+        ax.plot(X, Y, color='black')
 
     ax.set_xlim(left=scale[0], right=scale[1])
     ax.set_ylim(bottom=scale[0], top=scale[1])
     ax.set_axis_off()
-    fig.savefig(f'pict/figure{j+1}', dpi=200)
+    fig.savefig(f'pict/figure{layers_count - j}', dpi=300)
     ax.clear()
 
-im = Image.open('pict/figure1.png')
-print(im.info)
-im.save('pict/test.png', dpi=(200.0, 200.0))
-im = Image.open('pict/figure1.png')
-print(im.info)
+#im = Image.open('pict/figure1.png')
+#print(im.info)
+#im.save('pict/test.png', dpi=(200.0, 200.0))
+#im = Image.open('pict/figure1.png')
+#print(im.info)
