@@ -2,6 +2,12 @@
 
 Slicer created to help slice .stl models to images of layers
 
+### How to use
+
+1. Input filename, step and dpi in application window
+2. You can show stl 3D model using 'Show' button
+3. Press 'Slice !' to slice stl model - images will appear in pict/ dir
+
 ### Tech
 
 Slicer uses a number of libs to work properly:
